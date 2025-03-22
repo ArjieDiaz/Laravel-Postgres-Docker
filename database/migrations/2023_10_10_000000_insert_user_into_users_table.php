@@ -14,11 +14,20 @@ class InsertUserIntoUsersTable extends Migration
     public function up()
     {
         DB::table('users')->insert([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password123'),
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('password123'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Regular User',
+                'email' => 'user@example.com',
+                'password' => Hash::make('userpassword'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 
@@ -29,6 +38,6 @@ class InsertUserIntoUsersTable extends Migration
      */
     public function down()
     {
-        DB::table('users')->where('email', 'admin@example.com')->delete();
+        DB::table('users')->whereIn('email', ['admin@example.com', 'user@example.com'])->delete();
     }
 }
