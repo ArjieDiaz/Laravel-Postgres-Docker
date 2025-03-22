@@ -19,5 +19,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+        ]);
+        
+        // Optionally assign roles to existing users
+        \App\Models\User::find(1)->assignRole('admin');
     }
 }

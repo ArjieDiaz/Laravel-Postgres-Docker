@@ -23,11 +23,17 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('dashboard');
 });
 
-// User profile routes (assuming these use auth middleware already)
+// Combine all profile routes in one group
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Edit profile route
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Show profile route - only accessible to users with 'user' role
+    Route::get('/profile', [ProfileController::class, 'show'])
+        ->middleware('role:user')
+        ->name('profile.show');
 });
 
 // Authentication routes
@@ -40,5 +46,11 @@ Route::post('logout', function () {
 })->name('logout');
 
 Route::post('api/login', [LoginController::class, 'apiLogin']);
+
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::resource('users', App\Http\Controllers\UserController::class);
+    Route::post('users/{user}/roles', [App\Http\Controllers\UserController::class, 'assignRole'])->name('users.roles');
+});
 
 require __DIR__.'/auth.php';
